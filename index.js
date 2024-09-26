@@ -70,6 +70,26 @@ const client = new Client({
     intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessageReactions, GatewayIntentBits.GuildPresences, GatewayIntentBits.GuildIntegrations, GatewayIntentBits.GuildEmojisAndStickers],
     partials: [Partials.Message, Partials.Channel, Partials.Reaction, Partials.User],
 });
+`;
+if (argv.varenv === 'dotenv') {
+    indexJsContent = `require('dotenv').config();\n` + indexJsContent;
+};
+if (argv.dblib === 'mysql') {
+    indexJsContent += `const mysql = require('mysql');
+const connection = mysql.createConnection({
+    host: process.env.DB_HOST || 'localhost',
+    user: process.env.DB_USER || 'user',
+    password: process.env.DB_PASSWORD || 'password',
+    database: process.env.DB_NAME || 'database_name',
+});
+        
+connection.connect(err => {
+    if (err) throw err;
+    console.log('Connected to MySQL database');
+});
+`;
+}
+indexJsContent += `
 client.commands = new Collection();
 const commandsPath = path.join(__dirname, 'Commands');
 const commandFiles = fs.readdirSync(commandsPath).filter(f => f.endsWith('.js'));
@@ -89,24 +109,6 @@ for (const file of eventFiles) {
 };
 client.login('');
 `;
-if (argv.varenv === 'dotenv') {
-    indexJsContent = `require('dotenv').config();\n` + indexJsContent;
-};
-if (argv.dblib === 'mysql') {
-    indexJsContent += `const mysql = require('mysql');
-const connection = mysql.createConnection({
-    host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || 'password',
-    database: process.env.DB_NAME || 'database_name',
-});
-  
-connection.connect(err => {
-    if (err) throw err;
-    console.log('Connected to MySQL database');
-});
-`;
-}
 createFile(path.join(rootDir, 'index.js'), indexJsContent);
 const interactionCreateContent = `const { Events, EmbedBuilder } = require('discord.js');
 const cooldown = {};
