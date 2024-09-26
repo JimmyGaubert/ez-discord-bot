@@ -78,7 +78,6 @@ const connection = mysql.createConnection({
     password: process.env.DB_PASSWORD || 'password',
     database: process.env.DB_NAME || 'database_name',
 });
-        
 connection.connect(err => {
     if (err) throw err;
     console.log('Connected to MySQL database');
