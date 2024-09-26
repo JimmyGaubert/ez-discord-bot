@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 const fs = require('node:fs');
 const path = require('node:path');
+const { execSync } = require('node:child_process');
 const yargs = require('yargs');
-const { execSync } = require('child_process');
 const argv = yargs
     .option('name', {
         alias: 'n',
@@ -66,10 +66,6 @@ const installDependencies = () => {
 let indexJsContent = `const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Collection, GatewayIntentBits, Partials } = require('discord.js');
-const client = new Client({
-    intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessageReactions, GatewayIntentBits.GuildPresences, GatewayIntentBits.GuildIntegrations, GatewayIntentBits.GuildEmojisAndStickers],
-    partials: [Partials.Message, Partials.Channel, Partials.Reaction, Partials.User],
-});
 `;
 if (argv.varenv === 'dotenv') {
     indexJsContent = `require('dotenv').config();\n` + indexJsContent;
@@ -90,6 +86,10 @@ connection.connect(err => {
 `;
 }
 indexJsContent += `
+const client = new Client({
+    intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessageReactions, GatewayIntentBits.GuildPresences, GatewayIntentBits.GuildIntegrations, GatewayIntentBits.GuildEmojisAndStickers],
+    partials: [Partials.Message, Partials.Channel, Partials.Reaction, Partials.User],
+});
 client.commands = new Collection();
 const commandsPath = path.join(__dirname, 'Commands');
 const commandFiles = fs.readdirSync(commandsPath).filter(f => f.endsWith('.js'));
