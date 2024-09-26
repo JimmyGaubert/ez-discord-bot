@@ -1,5 +1,5 @@
 {
-  "name": "ez-discord-bot",
+  "name": "@earlam/ez-discord-bot",
   "version": "1.0.0",
   "main": "index.js",
   "bin": {
